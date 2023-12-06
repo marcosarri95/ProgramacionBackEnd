@@ -1,0 +1,95 @@
+<style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      display: block;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+
+<h2>Listado de productos con websockets</h2>
+<hr>
+
+<form id="productForm">
+  <label for="title">Título:</label>
+  <input type="text" id="title" name="title" required><br>
+
+  <label for="description">Descripción:</label>
+  <textarea id="description" name="description" required></textarea><br>
+
+  <label for="code">Código:</label>
+  <input type="text" id="code" name="code" required><br>
+
+  <label for="price">Precio:</label>
+  <input type="number" id="price" name="price" required><br>
+
+  <label for="status">Estado:</label>
+  <select id="status" name="status" required>
+    <option value="1">Disponible</option>
+    <option value="0">Agotado</option>
+  </select><br>
+
+  <label for="stock">Stock:</label>
+  <input type="number" id="stock" name="stock" required><br>
+
+  <label for="category">Categoría:</label>
+  <input type="text" id="category" name="category" required><br>
+
+  <label for="thumbnails">URL de la Imagen (Thumbnail):</label>
+  <input type="text" id="thumbnails" name="thumbnails" required><br>
+
+  <button type="button" onclick="enviarFormulario()">Enviar</button>
+</form>
+
+<br><br>
+<a href="/">Home page</a>
+<script src="socket.io/socket.io.js"></script>
+<script src="ws.js"></script>
+
