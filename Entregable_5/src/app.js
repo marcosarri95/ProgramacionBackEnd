@@ -1,16 +1,22 @@
+import express from 'express';
+import {engine} from 'express-handlebars';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import {Server} from 'socket.io';
+import {usuariosModelo} from './dao/models/message.models.js' 
 
-const express = require('express');
-const {engine} = require ('express-handlebars');
-const path = require('path');
-const mongoose = require('mongoose');
-const {Server} = require('socket.io')
-const Productos = require('./clases/productos.js'); // Cambiado el nombre a Productos
-const productoM = new Productos("../archivos/archivo.txt");
+
+// const Productos = require('./clases/productos.js'); // Cambiado el nombre a Productos
+// const productoM = new Productos("../archivos/archivo.txt");
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //aqui comienza el programa del servidor con express
-const routerProduct=require('./routes/productsRoutes.js')
-const routerVistas=require('./routes/vistasRoutes.js')
-
+import {prodRouter} from './routes/productsRoutes.js';
+import {carrRouter} from './routes/carritoRoutes.js';
+import {router} from './routes/vistasRoutes.js';
 
 const PORT = 9000;
 const app = express();
@@ -24,8 +30,9 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 
-app.use('/api/products', routerProduct)
-app.use('/', routerVistas)
+app.use('/api/products', prodRouter)
+app.use('/api/carts', carrRouter)
+app.use('/', router)
 
 
 const server = app.listen(PORT, () => { //se le pone server
@@ -44,38 +51,43 @@ async function conectarBaseDeDatos() {
 // Llamar a la función asíncrona
 conectarBaseDeDatos();
 
-
+let usuarios=[]
+let mensajes=[]
 
 const io = new Server(server) // se le coloca io
-io.on("connection",async socket=>{
-    let productos = await productoM.getProducts()
-    socket.emit("get", { productos }); // Ejemplo de uso de io.emit
 
-    socket.on("addProduct",async producto=>{
-        let prodN = JSON.parse(producto)
-        if (prodN.status == "1"){prodN.status = true}
-        else{prodN.status = false}
-        if(prodN.thumbnails == ""){prodN.thumbnails = []}
-    prodN.stock = parseInt(prodN.stock);
-    prodN.price = parseInt(prodN.price);
-    prodN.thumbnails = [prodN.thumbnails]
-    console.log(prodN);
-    
-         let ok = await productoM.validacion(prodN.title,prodN.description,prodN.code,prodN.price,prodN.status,prodN.stock,prodN.category,prodN.thumbnails)
-             if(ok){
-                if(await productoM.addProduct(prodN.title,prodN.description,prodN.code,prodN.price,prodN.status,prodN.stock,prodN.category,prodN.thumbnails)){
-                    productos = await productoM.getProducts()
-                    io.emit("get", { productos }); 
-                 }
-             }
-            else{
-                io.emit("error", { error: 'Verifique de no enviar propiedades adicionales o campos vacíos' }); // Ejemplo de uso de io.emit
-         }
-                
-        
-        
+
+io.on("connection", async socket=>{
+    console.log(`Se ha conectado un cliente con id ${socket.id}`)
+
+    socket.on('id',nombre=>{
+
+       usuarios.push({nombre, id:socket.id})
+        socket.broadcast.emit('nuevoUsuario',nombre)
+        socket.emit("hello",mensajes)
     })
-    
+
+    socket.on('mensaje', async datos=>{
+        const email = datos.emisor;
+        const mensaje = datos.mensaje;
+        io.emit('nuevoMensaje', datos)
+        console.log({email,mensaje});
+        try {
+            let nuevoMensaje=await usuariosModelo.create({email,mensaje})
+            console.log(`Mensaje y usuario creados con exito: ${nuevoMensaje}`);
+        } catch (error) {
+            console.log(`Error al crear el usuario y mensaje${error.mensaje}`);
+                }
+
+    })
+
+    socket.on("disconnect",()=>{
+        let usuario=usuarios.find(u=>u.id===socket.id)
+        if(usuario){
+            io.emit("usuarioDesconectado", usuario.nombre)
+        }
+    })
+
 })
 
 
