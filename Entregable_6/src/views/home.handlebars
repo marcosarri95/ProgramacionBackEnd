@@ -1,0 +1,20 @@
+<h2>Listado de productos</h2>
+<hr>
+
+<ul>
+    {{#each listaProductos}}
+        <li>{{this.title}}</li>
+        <li>{{this.description}}</li>
+        <li>{{this.code}}</li>
+        <li>{{this.price}}</li>
+        <li>{{this.status}}</li>
+        <li>{{this.stock}}</li>
+        <li>{{this.category}}</li>
+        <li>{{this.thumbnails}}</li>
+        <hr>
+    {{/each}}
+    
+</ul>
+
+<br><br>
+<a href="/api/products">Lista de productos en tiempo real</a>
