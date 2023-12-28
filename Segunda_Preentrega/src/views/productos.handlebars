@@ -1,0 +1,37 @@
+<h2>Listado de productos</h2>
+<hr>
+
+<ul>
+    {{#each product}}
+        <li>{{this.title}}</li>
+        <li>{{this.description}}</li>
+        <li>{{this.code}}</li>
+        <li>{{this.price}}</li>
+        <li>{{this.status}}</li>
+        <li>{{this.stock}}</li>
+        <li>{{this.category}}</li>
+        <li>{{this.thumbnails}}</li>
+        <hr>
+    {{/each}}
+    
+    
+</ul>
+
+<a href="/?pagina=1">Pág.1</a>
+
+{{#if hasPrevPage}}
+    <a href="/?pagina={{prevPage}}">Pág.Ant.</a>
+{{else}}
+    <span>Pág.Ant.</span>
+{{/if}}
+
+{{#if hasNextPage}}
+    <a href="/?pagina={{nextPage}}">Pág.Sig.</a>
+{{else}}
+    <span>Pág.Sig.</span>
+{{/if}}
+
+<a href="/?pagina={{totalPages}}">Ult.Pág.</a>
+
+
+<br><br>
