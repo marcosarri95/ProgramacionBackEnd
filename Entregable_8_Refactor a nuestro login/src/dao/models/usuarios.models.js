@@ -16,7 +16,8 @@ const usuariosEsquema=new mongoose.Schema(
         timestamps: {
             updatedAt: "FechaUltMod", createdAt: "FechaAlta"
         }
-    }
+    },
+    {strict:false}
 )
 
 export const usuariosModelo=mongoose.model(usuariosColeccion, usuariosEsquema)
