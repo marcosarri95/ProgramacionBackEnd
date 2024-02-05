@@ -1,20 +1,14 @@
 import express from 'express';
 import {engine} from 'express-handlebars';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import {Server} from 'socket.io';
 import sessions from 'express-session'
 import mongoStore from 'connect-mongo'
-import crypto from 'crypto'
 import {messageModelo} from './dao/models/message.models.js' 
-
-
-// const Productos = require('./clases/productos.js'); // Cambiado el nombre a Productos
-// const productoM = new Productos("../archivos/archivo.txt");
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import __dirname from './utils.js';
+import passport from 'passport';
+import { inicializarPassport } from './config/config.passport.js';
 
 //aqui comienza el programa del servidor con express
 import {prodRouter} from './routes/productsRoutes.js';
@@ -38,6 +32,10 @@ app.use(sessions(
         )
     }
 ))
+
+inicializarPassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
